@@ -16,6 +16,27 @@ const DEFAULT_CONFIG = {
   arrivalRate: 1,
 }
 
+/**
+ * Create a plain-data snapshot of a pipeline for reactive UI consumption.
+ * Returns new object/array references so Svelte detects the change.
+ */
+const snapshotPipeline = (pipeline) => {
+  const steps = pipeline.getSteps().map((s) => ({
+    name: s.name,
+    baseProcessTime: s.baseProcessTime,
+    wipLimit: s.wipLimit,
+    queue: [...s.queue],
+    active: [...s.active],
+  }))
+
+  const completed = [...pipeline.getCompleted()]
+
+  return {
+    getSteps: () => steps,
+    getCompleted: () => completed,
+  }
+}
+
 function createSimulationStore() {
   let config = $state({ ...DEFAULT_CONFIG })
   let unboundedPipeline = $state(null)
@@ -28,22 +49,28 @@ function createSimulationStore() {
   let itemsAdded = $state(0)
   let arrivalAccumulator = $state(0)
 
+  // Internal engine references (not reactive — mutated in place)
+  let unboundedEngine = null
+  let wipLimitedEngine = null
+
   const reset = () => {
     stop()
 
-    unboundedPipeline = createPipeline({
+    unboundedEngine = createPipeline({
       steps: DEFAULT_STEPS,
       processTimeSpread: config.processTimeSpread,
     })
 
-    wipLimitedPipeline = createPipeline({
+    wipLimitedEngine = createPipeline({
       steps: DEFAULT_STEPS,
       wipLimit: config.wipLimit,
       processTimeSpread: config.processTimeSpread,
     })
 
-    unboundedMetrics = calculateMetrics(unboundedPipeline)
-    wipLimitedMetrics = calculateMetrics(wipLimitedPipeline)
+    unboundedPipeline = snapshotPipeline(unboundedEngine)
+    wipLimitedPipeline = snapshotPipeline(wipLimitedEngine)
+    unboundedMetrics = calculateMetrics(unboundedEngine)
+    wipLimitedMetrics = calculateMetrics(wipLimitedEngine)
     isComplete = false
     itemsAdded = 0
     arrivalAccumulator = 0
@@ -55,8 +82,8 @@ function createSimulationStore() {
     arrivalAccumulator += config.arrivalRate
     while (arrivalAccumulator >= 1 && itemsAdded < config.workItemCount) {
       const id = `item-${itemsAdded + 1}`
-      unboundedPipeline.addWorkItem({ id })
-      wipLimitedPipeline.addWorkItem({ id })
+      unboundedEngine.addWorkItem({ id })
+      wipLimitedEngine.addWorkItem({ id })
       itemsAdded++
       arrivalAccumulator--
     }
@@ -64,14 +91,18 @@ function createSimulationStore() {
 
   const tickOnce = () => {
     addItems()
-    unboundedPipeline.tick()
-    wipLimitedPipeline.tick()
-    unboundedMetrics = calculateMetrics(unboundedPipeline)
-    wipLimitedMetrics = calculateMetrics(wipLimitedPipeline)
+    unboundedEngine.tick()
+    wipLimitedEngine.tick()
+
+    // Create new snapshots so Svelte detects the change
+    unboundedPipeline = snapshotPipeline(unboundedEngine)
+    wipLimitedPipeline = snapshotPipeline(wipLimitedEngine)
+    unboundedMetrics = calculateMetrics(unboundedEngine)
+    wipLimitedMetrics = calculateMetrics(wipLimitedEngine)
 
     const allDone =
-      unboundedPipeline.getCompleted().length >= config.workItemCount &&
-      wipLimitedPipeline.getCompleted().length >= config.workItemCount
+      unboundedEngine.getCompleted().length >= config.workItemCount &&
+      wipLimitedEngine.getCompleted().length >= config.workItemCount
 
     if (allDone) {
       isComplete = true
@@ -81,7 +112,7 @@ function createSimulationStore() {
 
   const start = () => {
     if (isRunning || isComplete) return
-    if (!unboundedPipeline) reset()
+    if (!unboundedEngine) reset()
     isRunning = true
 
     const baseInterval = 200
@@ -100,7 +131,7 @@ function createSimulationStore() {
 
   const step = () => {
     if (isComplete) return
-    if (!unboundedPipeline) reset()
+    if (!unboundedEngine) reset()
     tickOnce()
   }
 
