@@ -18,6 +18,7 @@
         min="1"
         max="10"
         value={config.wipLimit}
+        aria-valuetext="{config.wipLimit} items per step"
         oninput={(e) => handleChange('wipLimit', e)}
         disabled={isRunning}
         class="mt-1 w-full"
@@ -33,6 +34,7 @@
         min="5"
         max="50"
         value={config.workItemCount}
+        aria-valuetext="{config.workItemCount} items"
         oninput={(e) => handleChange('workItemCount', e)}
         disabled={isRunning}
         class="mt-1 w-full"
@@ -50,6 +52,9 @@
         min="0"
         max="100"
         value={config.processTimeSpread * 100}
+        aria-valuetext="plus or minus {Math.round(
+          config.processTimeSpread * 100,
+        )} percent"
         oninput={(e) =>
           onupdate('processTimeSpread', Number(e.target.value) / 100)}
         disabled={isRunning}
@@ -69,6 +74,7 @@
         max="4"
         step="0.5"
         value={config.simulationSpeed}
+        aria-valuetext="{config.simulationSpeed} times speed"
         oninput={(e) => handleChange('simulationSpeed', e)}
         class="mt-1 w-full"
         data-testid="simulation-speed-input"
@@ -84,6 +90,9 @@
         max="3"
         step="0.5"
         value={config.arrivalRate}
+        aria-valuetext="{config.arrivalRate} {config.arrivalRate === 1
+          ? 'item'
+          : 'items'} per tick"
         oninput={(e) => handleChange('arrivalRate', e)}
         disabled={isRunning}
         class="mt-1 w-full"
@@ -96,23 +105,16 @@
   </div>
 
   <div class="mt-6 flex flex-wrap gap-2">
-    {#if !isRunning}
-      <button
-        onclick={onstart}
-        class="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        data-testid="start-button"
-      >
-        Start
-      </button>
-    {:else}
-      <button
-        onclick={onstop}
-        class="rounded-md bg-gray-600 px-4 py-2 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-        data-testid="stop-button"
-      >
-        Pause
-      </button>
-    {/if}
+    <button
+      onclick={isRunning ? onstop : onstart}
+      class="rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 {isRunning
+        ? 'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'
+        : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'}"
+      aria-label={isRunning ? 'Pause simulation' : 'Start simulation'}
+      data-testid={isRunning ? 'stop-button' : 'start-button'}
+    >
+      {isRunning ? 'Pause' : 'Start'}
+    </button>
 
     <button
       onclick={onstep}

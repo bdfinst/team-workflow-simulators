@@ -13,13 +13,33 @@
     if (status === 'worse') return 'bg-red-50 border-red-200 text-red-700'
     return 'bg-gray-50 border-gray-200 text-gray-700'
   }
+
+  const statusLabel = (status) => {
+    if (status === 'better') return '(better)'
+    if (status === 'worse') return '(worse)'
+    return ''
+  }
 </script>
+
+{#snippet metricCell(value, status)}
+  <span
+    class="rounded border px-2 py-0.5 {isComplete ? statusClass(status) : ''}"
+  >
+    {value}
+    {#if isComplete}
+      <span class="sr-only">{statusLabel(status)}</span>
+    {/if}
+  </span>
+{/snippet}
 
 <div class="rounded-lg bg-white p-4 shadow-md" data-testid="metrics-dashboard">
   <h3 class="mb-4 text-lg font-semibold">Metrics Comparison</h3>
 
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
+      <caption class="sr-only"
+        >Comparison of metrics between unbounded and WIP-limited pipelines</caption
+      >
       <thead>
         <tr class="border-b text-left">
           <th class="pb-2 pr-4">Metric</th>
@@ -31,129 +51,83 @@
         <tr class="border-b" data-testid="metric-wip-count">
           <td class="py-2 pr-4 font-medium">WIP Count</td>
           <td class="py-2 pr-4">
-            <span
-              class="rounded border px-2 py-0.5 {isComplete
-                ? statusClass(
-                    better(
-                      unboundedMetrics.wipCount,
-                      wipLimitedMetrics.wipCount,
-                    ),
-                  )
-                : ''}"
-            >
-              {unboundedMetrics.wipCount}
-            </span>
+            {@render metricCell(
+              unboundedMetrics.wipCount,
+              better(unboundedMetrics.wipCount, wipLimitedMetrics.wipCount),
+            )}
           </td>
           <td class="py-2">
-            <span
-              class="rounded border px-2 py-0.5 {isComplete
-                ? statusClass(
-                    better(
-                      wipLimitedMetrics.wipCount,
-                      unboundedMetrics.wipCount,
-                    ),
-                  )
-                : ''}"
-            >
-              {wipLimitedMetrics.wipCount}
-            </span>
+            {@render metricCell(
+              wipLimitedMetrics.wipCount,
+              better(wipLimitedMetrics.wipCount, unboundedMetrics.wipCount),
+            )}
           </td>
         </tr>
         <tr class="border-b" data-testid="metric-avg-lead-time">
           <td class="py-2 pr-4 font-medium">Avg Lead Time</td>
           <td class="py-2 pr-4">
-            <span
-              class="rounded border px-2 py-0.5 {isComplete
-                ? statusClass(
-                    better(
-                      unboundedMetrics.avgLeadTime,
-                      wipLimitedMetrics.avgLeadTime,
-                    ),
-                  )
-                : ''}"
-            >
-              {unboundedMetrics.avgLeadTime.toFixed(1)}
-            </span>
+            {@render metricCell(
+              unboundedMetrics.avgLeadTime.toFixed(1),
+              better(
+                unboundedMetrics.avgLeadTime,
+                wipLimitedMetrics.avgLeadTime,
+              ),
+            )}
           </td>
           <td class="py-2">
-            <span
-              class="rounded border px-2 py-0.5 {isComplete
-                ? statusClass(
-                    better(
-                      wipLimitedMetrics.avgLeadTime,
-                      unboundedMetrics.avgLeadTime,
-                    ),
-                  )
-                : ''}"
-            >
-              {wipLimitedMetrics.avgLeadTime.toFixed(1)}
-            </span>
+            {@render metricCell(
+              wipLimitedMetrics.avgLeadTime.toFixed(1),
+              better(
+                wipLimitedMetrics.avgLeadTime,
+                unboundedMetrics.avgLeadTime,
+              ),
+            )}
           </td>
         </tr>
         <tr class="border-b" data-testid="metric-throughput">
           <td class="py-2 pr-4 font-medium">Throughput</td>
           <td class="py-2 pr-4">
-            <span
-              class="rounded border px-2 py-0.5 {isComplete
-                ? statusClass(
-                    better(
-                      unboundedMetrics.throughput,
-                      wipLimitedMetrics.throughput,
-                      false,
-                    ),
-                  )
-                : ''}"
-            >
-              {unboundedMetrics.throughput.toFixed(3)}
-            </span>
+            {@render metricCell(
+              unboundedMetrics.throughput.toFixed(3),
+              better(
+                unboundedMetrics.throughput,
+                wipLimitedMetrics.throughput,
+                false,
+              ),
+            )}
           </td>
           <td class="py-2">
-            <span
-              class="rounded border px-2 py-0.5 {isComplete
-                ? statusClass(
-                    better(
-                      wipLimitedMetrics.throughput,
-                      unboundedMetrics.throughput,
-                      false,
-                    ),
-                  )
-                : ''}"
-            >
-              {wipLimitedMetrics.throughput.toFixed(3)}
-            </span>
+            {@render metricCell(
+              wipLimitedMetrics.throughput.toFixed(3),
+              better(
+                wipLimitedMetrics.throughput,
+                unboundedMetrics.throughput,
+                false,
+              ),
+            )}
           </td>
         </tr>
         <tr class="border-b" data-testid="metric-flow-efficiency">
           <td class="py-2 pr-4 font-medium">Flow Efficiency</td>
           <td class="py-2 pr-4">
-            <span
-              class="rounded border px-2 py-0.5 {isComplete
-                ? statusClass(
-                    better(
-                      unboundedMetrics.flowEfficiency,
-                      wipLimitedMetrics.flowEfficiency,
-                      false,
-                    ),
-                  )
-                : ''}"
-            >
-              {(unboundedMetrics.flowEfficiency * 100).toFixed(0)}%
-            </span>
+            {@render metricCell(
+              `${(unboundedMetrics.flowEfficiency * 100).toFixed(0)}%`,
+              better(
+                unboundedMetrics.flowEfficiency,
+                wipLimitedMetrics.flowEfficiency,
+                false,
+              ),
+            )}
           </td>
           <td class="py-2">
-            <span
-              class="rounded border px-2 py-0.5 {isComplete
-                ? statusClass(
-                    better(
-                      wipLimitedMetrics.flowEfficiency,
-                      unboundedMetrics.flowEfficiency,
-                      false,
-                    ),
-                  )
-                : ''}"
-            >
-              {(wipLimitedMetrics.flowEfficiency * 100).toFixed(0)}%
-            </span>
+            {@render metricCell(
+              `${(wipLimitedMetrics.flowEfficiency * 100).toFixed(0)}%`,
+              better(
+                wipLimitedMetrics.flowEfficiency,
+                unboundedMetrics.flowEfficiency,
+                false,
+              ),
+            )}
           </td>
         </tr>
         <tr data-testid="metric-items-completed">

@@ -98,9 +98,10 @@ For each anti-pattern simulator:
 3. **Generate feature files** — use `/new-feature` to create Gherkin scenarios
 4. **Review the feature file** — verify scenarios cover happy path and edge cases
 5. **Implement with ATDD** — write step definitions, then implement until each scenario passes
-6. **Code review after each green test** — run `/code-review` on changed files
-7. **Fix review findings** — address all issues, verify tests still pass
-8. **Commit** — once all tests pass and code review is clean
+6. **Run `/frontend-design`** — apply the frontend-design skill to each new simulator page for distinctive, polished UI; apply the recommended fixes
+7. **Code review after each green test** — run `/code-review` on changed files (includes `a11y-review` agent for WCAG 2.1 AA compliance)
+8. **Fix review findings** — address all issues (including a11y), verify tests still pass
+9. **Commit** — once all tests pass and code review is clean
 
 ## Definition of Done (Per Simulator)
 

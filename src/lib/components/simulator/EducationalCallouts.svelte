@@ -14,7 +14,7 @@
   })
 </script>
 
-<div class="space-y-3" data-testid="educational-callouts">
+<div class="space-y-3" aria-live="polite" data-testid="educational-callouts">
   <div
     class="rounded-lg border border-blue-200 bg-blue-50 p-4"
     data-testid="callout-littles-law"

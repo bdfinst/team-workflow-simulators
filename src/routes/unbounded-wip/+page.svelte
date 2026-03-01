@@ -13,7 +13,7 @@
   }
 </script>
 
-<div
+<main
   class="min-h-screen bg-gray-100 p-4 md:p-8"
   data-testid="unbounded-wip-page"
 >
@@ -52,6 +52,7 @@
       {#if sim.isComplete}
         <div
           class="mb-4 rounded-lg border border-green-300 bg-green-50 p-3 text-center text-green-800"
+          role="status"
           data-testid="completion-banner"
         >
           Simulation complete! Both pipelines have processed all work items.
@@ -84,4 +85,4 @@
       </div>
     </div>
   </div>
-</div>
+</main>

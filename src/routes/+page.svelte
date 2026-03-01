@@ -2,7 +2,7 @@
   import { resolveRoute } from '$app/paths'
 </script>
 
-<div class="min-h-screen bg-gray-100 p-4 md:p-8">
+<main class="min-h-screen bg-gray-100 p-4 md:p-8">
   <header class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">Team Workflow Simulators</h1>
     <p class="mt-2 text-gray-600">
@@ -29,4 +29,4 @@
       </span>
     </a>
   </div>
-</div>
+</main>
