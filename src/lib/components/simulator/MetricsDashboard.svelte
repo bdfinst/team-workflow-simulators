@@ -1,7 +1,13 @@
 <script>
   import { WIP_GREEN_MAX, WIP_AMBER_MAX } from '../../simulation/thresholds.js'
 
-  let { unboundedMetrics, wipLimitedMetrics, isComplete } = $props()
+  let {
+    unboundedMetrics,
+    wipLimitedMetrics,
+    isComplete,
+    leftLabel = 'No Limit',
+    rightLabel = 'WIP-Limited',
+  } = $props()
 
   const compareValues = (a, b, lowerIsBetter = true) => {
     if (a === b) return 'neutral'
@@ -34,13 +40,13 @@
   <div class="overflow-x-auto">
     <table class="w-full text-xs">
       <caption class="sr-only"
-        >Comparison of metrics between unbounded and WIP-limited pipelines</caption
+        >Comparison of metrics between {leftLabel} and {rightLabel} pipelines</caption
       >
       <thead>
         <tr class="text-surface-400">
           <th class="pb-1 pr-3 text-left font-medium">Metric</th>
-          <th class="pb-1 pr-3 text-right font-medium">No Limit</th>
-          <th class="pb-1 text-right font-medium">WIP-Limited</th>
+          <th class="pb-1 pr-3 text-right font-medium">{leftLabel}</th>
+          <th class="pb-1 text-right font-medium">{rightLabel}</th>
         </tr>
       </thead>
       <tbody class="font-mono" style="font-variant-numeric: tabular-nums">
@@ -169,7 +175,7 @@
     </h4>
     <div class="grid grid-cols-2 gap-4 text-xs">
       <div>
-        <span class="text-[10px] text-surface-400">No Limit</span>
+        <span class="text-[10px] text-surface-400">{leftLabel}</span>
         <div class="mt-0.5 space-y-0.5">
           {#each unboundedMetrics.queueDepths as q (q.name)}
             <div class="flex items-center justify-between">
@@ -180,7 +186,7 @@
         </div>
       </div>
       <div>
-        <span class="text-[10px] text-surface-400">WIP-Limited</span>
+        <span class="text-[10px] text-surface-400">{rightLabel}</span>
         <div class="mt-0.5 space-y-0.5">
           {#each wipLimitedMetrics.queueDepths as q (q.name)}
             <div class="flex items-center justify-between">
