@@ -7,11 +7,11 @@
     return a > b ? 'better' : 'worse'
   }
 
-  const statusClass = (status) => {
-    if (status === 'better')
-      return 'bg-green-50 border-green-200 text-green-700'
-    if (status === 'worse') return 'bg-red-50 border-red-200 text-red-700'
-    return 'bg-gray-50 border-gray-200 text-gray-700'
+  const statusColor = (status) => {
+    if (!isComplete) return 'text-surface-100'
+    if (status === 'better') return 'text-accent-green'
+    if (status === 'worse') return 'text-accent-red'
+    return 'text-surface-100'
   }
 
   const statusLabel = (status) => {
@@ -21,126 +21,153 @@
   }
 </script>
 
-{#snippet metricCell(value, status)}
-  <span
-    class="rounded border px-2 py-0.5 {isComplete ? statusClass(status) : ''}"
-  >
-    {value}
-    {#if isComplete}
-      <span class="sr-only">{statusLabel(status)}</span>
-    {/if}
-  </span>
-{/snippet}
-
-<div class="rounded-lg bg-white p-4 shadow-md" data-testid="metrics-dashboard">
-  <h3 class="mb-4 text-lg font-semibold">Metrics Comparison</h3>
+<div data-testid="metrics-dashboard">
+  <div class="mb-2 flex items-center gap-2">
+    <h3 class="text-xs font-semibold uppercase tracking-wider text-surface-400">
+      Metrics
+    </h3>
+    <div class="h-px flex-1 bg-surface-600"></div>
+  </div>
 
   <div class="overflow-x-auto">
-    <table class="w-full text-sm">
+    <table class="w-full text-xs">
       <caption class="sr-only"
         >Comparison of metrics between unbounded and WIP-limited pipelines</caption
       >
       <thead>
-        <tr class="border-b text-left">
-          <th class="pb-2 pr-4">Metric</th>
-          <th class="pb-2 pr-4">No WIP Limit</th>
-          <th class="pb-2">WIP-Limited</th>
+        <tr class="text-surface-400">
+          <th class="pb-1 pr-3 text-left font-medium">Metric</th>
+          <th class="pb-1 pr-3 text-right font-medium">No Limit</th>
+          <th class="pb-1 text-right font-medium">WIP-Limited</th>
         </tr>
       </thead>
-      <tbody>
-        <tr class="border-b" data-testid="metric-wip-count">
-          <td class="py-2 pr-4 font-medium">WIP Count</td>
-          <td class="py-2 pr-4">
-            {@render metricCell(
-              unboundedMetrics.wipCount,
+      <tbody class="font-mono">
+        <tr class="border-t border-surface-700" data-testid="metric-wip-count">
+          <td class="py-1 pr-3 font-sans font-medium text-surface-200"
+            >WIP Count</td
+          >
+          <td
+            class="py-1 pr-3 text-right {statusColor(
               better(unboundedMetrics.wipCount, wipLimitedMetrics.wipCount),
-            )}
+            )}"
+          >
+            {unboundedMetrics.wipCount}
+            <span class="sr-only"
+              >{statusLabel(
+                better(unboundedMetrics.wipCount, wipLimitedMetrics.wipCount),
+              )}</span
+            >
           </td>
-          <td class="py-2">
-            {@render metricCell(
-              wipLimitedMetrics.wipCount,
+          <td
+            class="py-1 text-right {statusColor(
               better(wipLimitedMetrics.wipCount, unboundedMetrics.wipCount),
-            )}
+            )}"
+          >
+            {wipLimitedMetrics.wipCount}
+            <span class="sr-only"
+              >{statusLabel(
+                better(wipLimitedMetrics.wipCount, unboundedMetrics.wipCount),
+              )}</span
+            >
           </td>
         </tr>
-        <tr class="border-b" data-testid="metric-avg-lead-time">
-          <td class="py-2 pr-4 font-medium">Avg Lead Time</td>
-          <td class="py-2 pr-4">
-            {@render metricCell(
-              unboundedMetrics.avgLeadTime.toFixed(1),
+        <tr
+          class="border-t border-surface-700"
+          data-testid="metric-avg-lead-time"
+        >
+          <td class="py-1 pr-3 font-sans font-medium text-surface-200"
+            >Avg Lead Time</td
+          >
+          <td
+            class="py-1 pr-3 text-right {statusColor(
               better(
                 unboundedMetrics.avgLeadTime,
                 wipLimitedMetrics.avgLeadTime,
               ),
-            )}
+            )}"
+          >
+            {unboundedMetrics.avgLeadTime.toFixed(1)}
           </td>
-          <td class="py-2">
-            {@render metricCell(
-              wipLimitedMetrics.avgLeadTime.toFixed(1),
+          <td
+            class="py-1 text-right {statusColor(
               better(
                 wipLimitedMetrics.avgLeadTime,
                 unboundedMetrics.avgLeadTime,
               ),
-            )}
+            )}"
+          >
+            {wipLimitedMetrics.avgLeadTime.toFixed(1)}
           </td>
         </tr>
-        <tr class="border-b" data-testid="metric-throughput">
-          <td class="py-2 pr-4 font-medium">Throughput</td>
-          <td class="py-2 pr-4">
-            {@render metricCell(
-              unboundedMetrics.throughput.toFixed(3),
+        <tr class="border-t border-surface-700" data-testid="metric-throughput">
+          <td class="py-1 pr-3 font-sans font-medium text-surface-200"
+            >Throughput</td
+          >
+          <td
+            class="py-1 pr-3 text-right {statusColor(
               better(
                 unboundedMetrics.throughput,
                 wipLimitedMetrics.throughput,
                 false,
               ),
-            )}
+            )}"
+          >
+            {unboundedMetrics.throughput.toFixed(3)}
           </td>
-          <td class="py-2">
-            {@render metricCell(
-              wipLimitedMetrics.throughput.toFixed(3),
+          <td
+            class="py-1 text-right {statusColor(
               better(
                 wipLimitedMetrics.throughput,
                 unboundedMetrics.throughput,
                 false,
               ),
-            )}
+            )}"
+          >
+            {wipLimitedMetrics.throughput.toFixed(3)}
           </td>
         </tr>
-        <tr class="border-b" data-testid="metric-flow-efficiency">
-          <td class="py-2 pr-4 font-medium">Flow Efficiency</td>
-          <td class="py-2 pr-4">
-            {@render metricCell(
-              `${(unboundedMetrics.flowEfficiency * 100).toFixed(0)}%`,
+        <tr
+          class="border-t border-surface-700"
+          data-testid="metric-flow-efficiency"
+        >
+          <td class="py-1 pr-3 font-sans font-medium text-surface-200"
+            >Flow Efficiency</td
+          >
+          <td
+            class="py-1 pr-3 text-right {statusColor(
               better(
                 unboundedMetrics.flowEfficiency,
                 wipLimitedMetrics.flowEfficiency,
                 false,
               ),
-            )}
+            )}"
+          >
+            {(unboundedMetrics.flowEfficiency * 100).toFixed(0)}%
           </td>
-          <td class="py-2">
-            {@render metricCell(
-              `${(wipLimitedMetrics.flowEfficiency * 100).toFixed(0)}%`,
+          <td
+            class="py-1 text-right {statusColor(
               better(
                 wipLimitedMetrics.flowEfficiency,
                 unboundedMetrics.flowEfficiency,
                 false,
               ),
-            )}
+            )}"
+          >
+            {(wipLimitedMetrics.flowEfficiency * 100).toFixed(0)}%
           </td>
         </tr>
-        <tr data-testid="metric-items-completed">
-          <td class="py-2 pr-4 font-medium">Items Completed</td>
-          <td class="py-2 pr-4">
-            <span class="rounded border px-2 py-0.5">
-              {unboundedMetrics.itemsCompleted}
-            </span>
+        <tr
+          class="border-t border-surface-700"
+          data-testid="metric-items-completed"
+        >
+          <td class="py-1 pr-3 font-sans font-medium text-surface-200"
+            >Completed</td
+          >
+          <td class="py-1 pr-3 text-right text-surface-100">
+            {unboundedMetrics.itemsCompleted}
           </td>
-          <td class="py-2">
-            <span class="rounded border px-2 py-0.5">
-              {wipLimitedMetrics.itemsCompleted}
-            </span>
+          <td class="py-1 text-right text-surface-100">
+            {wipLimitedMetrics.itemsCompleted}
           </td>
         </tr>
       </tbody>
@@ -148,31 +175,31 @@
   </div>
 
   <!-- Queue depths -->
-  <div class="mt-4" data-testid="queue-depths">
-    <h4 class="mb-2 text-sm font-medium text-gray-600">Queue Depth per Step</h4>
-    <div class="grid grid-cols-2 gap-4">
+  <div class="mt-3 border-t border-surface-700 pt-2" data-testid="queue-depths">
+    <h4
+      class="mb-1 text-[10px] font-medium uppercase tracking-wider text-surface-400"
+    >
+      Queue Depths
+    </h4>
+    <div class="grid grid-cols-2 gap-4 text-xs">
       <div>
-        <span class="text-xs text-gray-500">No WIP Limit</span>
-        <div class="mt-1 space-y-1">
+        <span class="text-[10px] text-surface-400">No Limit</span>
+        <div class="mt-0.5 space-y-0.5">
           {#each unboundedMetrics.queueDepths as q (q.name)}
-            <div class="flex items-center justify-between text-xs">
-              <span>{q.name}</span>
-              <span class="rounded bg-gray-100 px-2 py-0.5 font-mono"
-                >{q.depth}</span
-              >
+            <div class="flex items-center justify-between">
+              <span class="text-surface-300">{q.name}</span>
+              <span class="font-mono text-surface-100">{q.depth}</span>
             </div>
           {/each}
         </div>
       </div>
       <div>
-        <span class="text-xs text-gray-500">WIP-Limited</span>
-        <div class="mt-1 space-y-1">
+        <span class="text-[10px] text-surface-400">WIP-Limited</span>
+        <div class="mt-0.5 space-y-0.5">
           {#each wipLimitedMetrics.queueDepths as q (q.name)}
-            <div class="flex items-center justify-between text-xs">
-              <span>{q.name}</span>
-              <span class="rounded bg-gray-100 px-2 py-0.5 font-mono"
-                >{q.depth}</span
-              >
+            <div class="flex items-center justify-between">
+              <span class="text-surface-300">{q.name}</span>
+              <span class="font-mono text-surface-100">{q.depth}</span>
             </div>
           {/each}
         </div>

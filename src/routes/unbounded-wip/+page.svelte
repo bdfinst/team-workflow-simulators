@@ -14,75 +14,88 @@
 </script>
 
 <main
-  class="min-h-screen bg-gray-100 p-4 md:p-8"
+  class="flex h-screen flex-col bg-surface-900 p-3"
   data-testid="unbounded-wip-page"
 >
-  <header class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900 md:text-3xl">
-      Unbounded WIP Simulator
+  <!-- Top bar: title + nav -->
+  <header class="mb-3 flex items-center gap-4">
+    <a
+      href="/"
+      class="text-surface-400 transition-colors hover:text-surface-100"
+      aria-label="Back to home"
+    >
+      <svg
+        class="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+        />
+      </svg>
+    </a>
+    <h1 class="text-lg font-semibold text-surface-50">
+      Unbounded WIP
+      <span class="font-normal text-surface-400">Simulator</span>
     </h1>
-    <p class="mt-1 text-gray-600">
-      See how Work-In-Progress limits affect throughput, lead time, and flow
-      efficiency.
-    </p>
+
+    {#if sim.isComplete}
+      <div
+        class="ml-auto rounded-full border border-accent-green/30 bg-accent-green/10 px-3 py-1 text-xs font-medium text-accent-green"
+        role="status"
+        data-testid="completion-banner"
+      >
+        Simulation complete
+      </div>
+    {/if}
   </header>
 
-  <div class="grid grid-cols-1 gap-6 xl:grid-cols-4">
-    <!-- Sidebar: controls + callouts -->
-    <aside class="space-y-6 xl:col-span-1">
-      <ParameterControls
-        config={sim.config}
-        isRunning={sim.isRunning}
-        onupdate={handleConfigUpdate}
-        onstart={() => sim.start()}
-        onstop={() => sim.stop()}
-        onstep={() => sim.step()}
-        onreset={() => sim.reset()}
-      />
+  <!-- Controls strip -->
+  <ParameterControls
+    config={sim.config}
+    isRunning={sim.isRunning}
+    onupdate={handleConfigUpdate}
+    onstart={() => sim.start()}
+    onstop={() => sim.stop()}
+    onstep={() => sim.step()}
+    onreset={() => sim.reset()}
+  />
 
+  <!-- Main content: pipelines + sidebar -->
+  <div class="mt-3 grid min-h-0 flex-1 grid-cols-1 gap-3 xl:grid-cols-4">
+    <!-- Pipelines -->
+    <div
+      class="flex min-h-0 flex-col gap-3 xl:col-span-3"
+      data-testid="side-by-side"
+    >
+      <PipelineView
+        pipeline={sim.unboundedPipeline}
+        label="No WIP Limit"
+        variant="danger"
+      />
+      <PipelineView
+        pipeline={sim.wipLimitedPipeline}
+        label="WIP-Limited"
+        variant="success"
+      />
+    </div>
+
+    <!-- Sidebar: metrics + callouts -->
+    <aside class="flex min-h-0 flex-col gap-4 overflow-y-auto xl:col-span-1">
+      <MetricsDashboard
+        unboundedMetrics={sim.unboundedMetrics}
+        wipLimitedMetrics={sim.wipLimitedMetrics}
+        isComplete={sim.isComplete}
+      />
       <EducationalCallouts
         unboundedMetrics={sim.unboundedMetrics}
         isRunning={sim.isRunning}
         wipLimitedPipeline={sim.wipLimitedPipeline}
       />
     </aside>
-
-    <!-- Main: side-by-side pipelines -->
-    <div class="xl:col-span-3">
-      {#if sim.isComplete}
-        <div
-          class="mb-4 rounded-lg border border-green-300 bg-green-50 p-3 text-center text-green-800"
-          role="status"
-          data-testid="completion-banner"
-        >
-          Simulation complete! Both pipelines have processed all work items.
-        </div>
-      {/if}
-
-      <div
-        class="grid grid-cols-1 gap-6 md:grid-cols-2"
-        data-testid="side-by-side"
-      >
-        <PipelineView
-          pipeline={sim.unboundedPipeline}
-          label="No WIP Limit"
-          variant="danger"
-        />
-        <PipelineView
-          pipeline={sim.wipLimitedPipeline}
-          label="WIP-Limited"
-          variant="success"
-        />
-      </div>
-
-      <!-- Metrics -->
-      <div class="mt-6">
-        <MetricsDashboard
-          unboundedMetrics={sim.unboundedMetrics}
-          wipLimitedMetrics={sim.wipLimitedMetrics}
-          isComplete={sim.isComplete}
-        />
-      </div>
-    </div>
   </div>
 </main>
