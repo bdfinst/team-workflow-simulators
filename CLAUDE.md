@@ -50,7 +50,11 @@ src/
 │   │   └── thresholds.js      # WIP color thresholds (shared constants)
 │   ├── stores/
 │   │   ├── simulationStore.svelte.js   # Unbounded WIP: two pipelines side-by-side
-│   │   └── codeReviewStore.svelte.js   # Code Review: three pipelines (pair/sync/async)
+│   │   ├── codeReviewStore.svelte.js   # Code Review: three pipelines (pair/sync/async)
+│   │   ├── batchSizeStore.svelte.js    # Batch Size: large vs small batches
+│   │   ├── lateTestingStore.svelte.js  # Late Testing: late test vs shift-left
+│   │   ├── branchLifetimeStore.svelte.js # Branch Lifetime: long branch vs trunk-based
+│   │   └── humanVsAgenticStore.svelte.js # Human vs Agentic: three dev approaches
 │   └── components/
 │       ├── simulator/       # Shared simulator UI components
 │       │   ├── PipelineView.svelte       # Step queues + active items visualization
@@ -59,16 +63,37 @@ src/
 │       │   ├── ControlTooltip.svelte     # CSS-only info tooltip
 │       │   ├── ParameterControls.svelte  # Simulator-specific sliders + actions
 │       │   └── EducationalCallouts.svelte # Contextual learning cards
-│       └── code-review/     # Code Review simulator components
-│           ├── ReviewControls.svelte     # Code review-specific parameter sliders
-│           ├── ReviewMetrics.svelte      # Three-column metrics table
-│           └── ReviewCallouts.svelte     # Code review educational callouts
+│       ├── code-review/     # Code Review simulator components
+│       │   ├── ReviewControls.svelte     # Code review-specific parameter sliders
+│       │   ├── ReviewMetrics.svelte      # Three-column metrics table
+│       │   └── ReviewCallouts.svelte     # Code review educational callouts
+│       ├── batch-size/      # Batch Size simulator components
+│       │   ├── BatchSizeControls.svelte  # Batch multiplier sliders
+│       │   └── BatchSizeCallouts.svelte  # Batch size educational callouts
+│       ├── late-testing/    # Late Testing simulator components
+│       │   ├── TestingControls.svelte    # Defect rate/feedback delay sliders
+│       │   └── TestingCallouts.svelte    # Late testing educational callouts
+│       ├── branch-lifetime/ # Branch Lifetime simulator components
+│       │   ├── BranchControls.svelte     # Branch lifetime/overlap sliders
+│       │   └── BranchCallouts.svelte     # Branch lifetime educational callouts
+│       └── human-vs-agentic/ # Human vs Agentic simulator components
+│           ├── AgenticControls.svelte    # Batch size, agent speed, reviewer sliders
+│           ├── AgenticMetrics.svelte     # Three-column metrics table
+│           └── AgenticCallouts.svelte    # Agentic development educational callouts
 ├── routes/
 │   ├── +page.svelte              # Home: links to all simulators
 │   ├── unbounded-wip/
 │   │   └── +page.svelte          # Unbounded WIP simulator page
-│   └── code-review-styles/
-│       └── +page.svelte          # Code Review Styles simulator page
+│   ├── code-review-styles/
+│   │   └── +page.svelte          # Code Review Styles simulator page
+│   ├── batch-size/
+│   │   └── +page.svelte          # Monolithic Work Items simulator page
+│   ├── late-testing/
+│   │   └── +page.svelte          # Testing Only at End simulator page
+│   ├── branch-lifetime/
+│   │   └── +page.svelte          # Long-Lived Feature Branches simulator page
+│   └── human-vs-agentic/
+│       └── +page.svelte          # Human vs Agentic Development simulator page
 tests/
 ├── unit/simulation/         # Vitest unit tests for engine + metrics
 ├── e2e/                     # Playwright E2E tests
@@ -93,6 +118,30 @@ docs/
 - **Engine**: Reuses `createPipeline()` with rework mechanics for three review approaches (pair, synchronous, async)
 - **Store**: `codeReviewStore.svelte.js` — runs three pipelines in parallel with configurable wait times, context switch penalties, and pair overhead
 - **Key insight**: Demonstrates how review approach impacts lead time and flow efficiency via wait times and context switching
+
+### 3. Monolithic Work Items (`/batch-size`)
+
+- **Engine**: Reuses `createPipeline()` with multiplied process times for large batches vs standard times for small batches
+- **Store**: `batchSizeStore.svelte.js` — runs large-batch + small-batch pipelines with separate item counts
+- **Key insight**: Large items block the pipeline longer at every step; small batches flow continuously with faster feedback
+
+### 4. Testing Only at End (`/late-testing`)
+
+- **Engine**: Reuses `createPipeline()` with rework mechanics; late testing has separate test phase with feedback delay, shift-left integrates testing into development
+- **Store**: `lateTestingStore.svelte.js` — runs late-test + shift-left pipelines with configurable defect rate and feedback delay
+- **Key insight**: Late testing creates expensive rework loops; shift-left testing catches defects immediately with minimal rework
+
+### 5. Long-Lived Feature Branches (`/branch-lifetime`)
+
+- **Engine**: Reuses `createPipeline()` with quadratic integration cost and rework for long branches vs trivial integration for trunk-based
+- **Store**: `branchLifetimeStore.svelte.js` — runs long-branch + trunk-based pipelines with separate item counts
+- **Key insight**: Merge difficulty grows quadratically with branch lifetime; trunk-based development keeps integration trivial
+
+### 6. Human vs Agentic Development (`/human-vs-agentic`)
+
+- **Engine**: Reuses `createPipeline()` with three approaches: human large-batch, agent + manual review (limited reviewerCount), agent + automated review
+- **Store**: `humanVsAgenticStore.svelte.js` — runs three pipelines with separate item counts (human gets fewer, larger items)
+- **Key insight**: Agent speed alone isn't enough; the review bottleneck determines whether small-batch advantages are realized. Automated review unlocks agentic development.
 
 ## Setup
 
