@@ -57,7 +57,7 @@ describe('calculateMetrics', () => {
   })
 
   it('calculates queue depth per step', () => {
-    const pipeline = createPipeline({ steps: defaultSteps, wipLimit: 1 })
+    const pipeline = createPipeline({ steps: defaultSteps, workerCount: 1 })
     pipeline.addWorkItem({ id: 'item-1' })
     pipeline.addWorkItem({ id: 'item-2' })
     pipeline.addWorkItem({ id: 'item-3' })

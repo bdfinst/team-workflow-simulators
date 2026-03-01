@@ -25,15 +25,18 @@ const snapshotPipeline = (pipeline) => {
     name: s.name,
     baseProcessTime: s.baseProcessTime,
     wipLimit: s.wipLimit,
+    workerCount: s.workerCount,
     queue: [...s.queue],
     active: [...s.active],
   }))
 
   const completed = [...pipeline.getCompleted()]
+  const incomingCount = pipeline.getIncoming().length
 
   return {
     getSteps: () => steps,
     getCompleted: () => completed,
+    incomingCount,
   }
 }
 
@@ -58,12 +61,14 @@ function createSimulationStore() {
 
     unboundedEngine = createPipeline({
       steps: DEFAULT_STEPS,
+      workerCount: config.wipLimit,
       processTimeSpread: config.processTimeSpread,
     })
 
     wipLimitedEngine = createPipeline({
       steps: DEFAULT_STEPS,
       wipLimit: config.wipLimit,
+      workerCount: config.wipLimit,
       processTimeSpread: config.processTimeSpread,
     })
 

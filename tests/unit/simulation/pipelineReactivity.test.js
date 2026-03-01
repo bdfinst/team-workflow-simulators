@@ -64,7 +64,7 @@ describe('pipeline state change detection', () => {
 
   describe('queue mutations are in-place', () => {
     it('mutates the queue array via push/shift rather than replacing', () => {
-      const pipeline = createPipeline({ steps: twoSteps, wipLimit: 1 })
+      const pipeline = createPipeline({ steps: twoSteps, workerCount: 1 })
       pipeline.addWorkItem({ id: 'item-1' })
       pipeline.addWorkItem({ id: 'item-2' })
       pipeline.tick()
@@ -97,7 +97,7 @@ describe('pipeline state content does change after tick', () => {
   })
 
   it('changes queue depth as items arrive and move through steps', () => {
-    const pipeline = createPipeline({ steps: twoSteps, wipLimit: 1 })
+    const pipeline = createPipeline({ steps: twoSteps, workerCount: 1 })
     pipeline.addWorkItem({ id: 'item-1' })
     pipeline.addWorkItem({ id: 'item-2' })
     pipeline.addWorkItem({ id: 'item-3' })

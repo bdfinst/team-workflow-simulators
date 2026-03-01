@@ -9,7 +9,7 @@
     if (!wipLimitedPipeline || !isRunning) return false
     const steps = wipLimitedPipeline.getSteps()
     return steps.some(
-      (s) => s.active.length >= s.wipLimit && s.wipLimit !== Infinity,
+      (s) => s.active.length >= s.workerCount && s.workerCount !== Infinity,
     )
   })
 </script>
