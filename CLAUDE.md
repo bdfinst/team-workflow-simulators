@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A library of interactive simulators that visually demonstrate workflow anti-patterns and compare them side-by-side with the recommended patterns. The goal is to make abstract concepts tangible — users should *see* the impact of unbounded WIP, large batch sizes, long-lived branches, etc. Licensed under Apache 2.0.
+A library of interactive simulators that visually demonstrate workflow anti-patterns and compare them side-by-side with the recommended patterns. The goal is to make abstract concepts tangible — users should _see_ the impact of unbounded WIP, large batch sizes, long-lived branches, etc. Licensed under Apache 2.0.
 
 ## Reference Source
 
@@ -28,11 +28,53 @@ Anti-patterns come from the [MinimumCD Practice Guide](https://migration.minimum
 
 ## Tech Stack
 
-- **Svelte 5** with runes (`$state`, `$derived`, `$props`)
-- **Tailwind CSS** for styling
+- **SvelteKit** with **Svelte 5** runes (`$state`, `$derived`, `$props`)
+- **Tailwind CSS v4** via `@tailwindcss/vite` plugin
 - **Vitest** for unit tests
 - **Playwright** for acceptance/E2E tests
+- **ESLint** + **Prettier** (single quotes, no semicolons, 2-space indent)
+- **Static adapter** (`@sveltejs/adapter-static`) — builds to `build/`
 - Follow all standards in `.claude/rules/`
+
+## Project Structure
+
+```
+src/
+├── lib/
+│   ├── simulation/          # Pure JS simulation engine (no Svelte deps)
+│   │   ├── createPipeline.js  # Factory: pipeline with steps, WIP limits, tick()
+│   │   ├── metrics.js         # calculateMetrics(pipeline) → snapshot
+│   │   └── processTime.js     # applyVariability(base, spread)
+│   ├── stores/
+│   │   └── simulationStore.svelte.js  # Rune store: runs two pipelines side-by-side
+│   └── components/
+│       └── simulator/       # Shared simulator UI components
+│           ├── PipelineView.svelte       # Step queues + active items visualization
+│           ├── MetricsDashboard.svelte   # Side-by-side metrics table
+│           ├── ParameterControls.svelte  # Sliders + Start/Pause/Step/Reset
+│           └── EducationalCallouts.svelte # Contextual learning cards
+├── routes/
+│   ├── +page.svelte         # Home: links to all simulators
+│   └── unbounded-wip/
+│       └── +page.svelte     # Unbounded WIP simulator page
+tests/
+├── unit/simulation/         # Vitest unit tests for engine + metrics
+features/
+└── simulation/unbounded-wip/ # Gherkin acceptance specs (5 feature files)
+docs/
+└── goals/                   # Goal documents per simulator
+```
+
+## Completed Simulators
+
+### 1. Unbounded WIP (`/unbounded-wip`)
+
+- **Goal doc**: `docs/goals/unbounded-wip.md`
+- **Feature files**: `features/simulation/unbounded-wip/` (25 scenarios)
+- **Engine**: `src/lib/simulation/` — factory-function pipeline with tick-based processing, WIP limit enforcement, process time variability
+- **Store**: `simulationStore.svelte.js` — runs unbounded + WIP-limited pipelines in parallel, exposes reactive metrics
+- **Unit tests**: 25 tests across 4 files (createPipeline, tick, metrics, processTime)
+- **Key pattern**: Each simulator uses `createPipeline()` for its engine logic, keeping simulation pure JS and independently testable
 
 ## Setup
 
