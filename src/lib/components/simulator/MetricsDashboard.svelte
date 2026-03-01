@@ -1,7 +1,9 @@
 <script>
+  import { WIP_GREEN_MAX, WIP_AMBER_MAX } from '../../simulation/thresholds.js'
+
   let { unboundedMetrics, wipLimitedMetrics, isComplete } = $props()
 
-  const better = (a, b, lowerIsBetter = true) => {
+  const compareValues = (a, b, lowerIsBetter = true) => {
     if (a === b) return 'neutral'
     if (lowerIsBetter) return a < b ? 'better' : 'worse'
     return a > b ? 'better' : 'worse'
@@ -14,10 +16,10 @@
     return 'text-surface-100'
   }
 
-  const statusLabel = (status) => {
-    if (status === 'better') return '(better)'
-    if (status === 'worse') return '(worse)'
-    return ''
+  const wipColor = (count) => {
+    if (count <= WIP_GREEN_MAX) return 'text-accent-green'
+    if (count <= WIP_AMBER_MAX) return 'text-accent-amber'
+    return 'text-accent-red'
   }
 </script>
 
@@ -41,34 +43,18 @@
           <th class="pb-1 text-right font-medium">WIP-Limited</th>
         </tr>
       </thead>
-      <tbody class="font-mono">
+      <tbody class="font-mono" style="font-variant-numeric: tabular-nums">
         <tr class="border-t border-surface-700" data-testid="metric-wip-count">
           <td class="py-1 pr-3 font-sans font-medium text-surface-200"
             >WIP Count</td
           >
           <td
-            class="py-1 pr-3 text-right {statusColor(
-              better(unboundedMetrics.wipCount, wipLimitedMetrics.wipCount),
-            )}"
+            class="py-1 pr-3 text-right {wipColor(unboundedMetrics.wipCount)}"
           >
             {unboundedMetrics.wipCount}
-            <span class="sr-only"
-              >{statusLabel(
-                better(unboundedMetrics.wipCount, wipLimitedMetrics.wipCount),
-              )}</span
-            >
           </td>
-          <td
-            class="py-1 text-right {statusColor(
-              better(wipLimitedMetrics.wipCount, unboundedMetrics.wipCount),
-            )}"
-          >
+          <td class="py-1 text-right {wipColor(wipLimitedMetrics.wipCount)}">
             {wipLimitedMetrics.wipCount}
-            <span class="sr-only"
-              >{statusLabel(
-                better(wipLimitedMetrics.wipCount, unboundedMetrics.wipCount),
-              )}</span
-            >
           </td>
         </tr>
         <tr
@@ -80,7 +66,7 @@
           >
           <td
             class="py-1 pr-3 text-right {statusColor(
-              better(
+              compareValues(
                 unboundedMetrics.avgLeadTime,
                 wipLimitedMetrics.avgLeadTime,
               ),
@@ -90,7 +76,7 @@
           </td>
           <td
             class="py-1 text-right {statusColor(
-              better(
+              compareValues(
                 wipLimitedMetrics.avgLeadTime,
                 unboundedMetrics.avgLeadTime,
               ),
@@ -105,7 +91,7 @@
           >
           <td
             class="py-1 pr-3 text-right {statusColor(
-              better(
+              compareValues(
                 unboundedMetrics.throughput,
                 wipLimitedMetrics.throughput,
                 false,
@@ -116,7 +102,7 @@
           </td>
           <td
             class="py-1 text-right {statusColor(
-              better(
+              compareValues(
                 wipLimitedMetrics.throughput,
                 unboundedMetrics.throughput,
                 false,
@@ -135,7 +121,7 @@
           >
           <td
             class="py-1 pr-3 text-right {statusColor(
-              better(
+              compareValues(
                 unboundedMetrics.flowEfficiency,
                 wipLimitedMetrics.flowEfficiency,
                 false,
@@ -146,7 +132,7 @@
           </td>
           <td
             class="py-1 text-right {statusColor(
-              better(
+              compareValues(
                 wipLimitedMetrics.flowEfficiency,
                 unboundedMetrics.flowEfficiency,
                 false,

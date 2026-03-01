@@ -4,18 +4,7 @@
 
 ---
 
-## 📇 By Topic
-
-### Architecture & Design
-
-| Topic | Location | Line/Section |
-|-------|----------|--------------|
-| System architecture overview | [../guides/architecture.md](../guides/architecture.md) | System Architecture |
-| Svelte 5 rune store architecture | [../guides/architecture.md](../guides/architecture.md) | Svelte 5 Runes Store Architecture |
-| Data flow patterns | [../guides/architecture.md](../guides/architecture.md) | Data Flow Patterns |
-| Svelte Flow integration | [../guides/architecture.md](../guides/architecture.md) | Svelte Flow Canvas Integration |
-| Simulation engine flow | [../guides/architecture.md](../guides/architecture.md) | Simulation Engine Flow |
-| Component hierarchy | [../guides/architecture.md](../guides/architecture.md) | Component Hierarchy |
+## By Topic
 
 ### Code Style
 
@@ -45,8 +34,6 @@
 |-------|----------|--------------|
 | Svelte 5 rune store patterns | [../examples/svelte-stores.md](../examples/svelte-stores.md) | Complete guide |
 | Store structure | [../examples/svelte-stores.md](../examples/svelte-stores.md) | Store Structure |
-| vsmDataStore (persisted) | [../examples/svelte-stores.md](../examples/svelte-stores.md) | VSM Data Store |
-| simulationControlStore (ephemeral) | [../examples/svelte-stores.md](../examples/svelte-stores.md) | Simulation Control Store |
 | Accessing stores in components | [../examples/svelte-stores.md](../examples/svelte-stores.md) | Accessing Stores |
 | Store best practices | [../examples/svelte-stores.md](../examples/svelte-stores.md) | Store Best Practices |
 
@@ -119,7 +106,7 @@
 
 ---
 
-## 🔍 By Task
+## By Task
 
 ### "I want to..."
 
@@ -130,45 +117,28 @@
 | Create a Svelte component | [../examples/svelte-components.md](../examples/svelte-components.md) |
 | Use factory functions (no classes!) | [../examples/factory-functions.md](../examples/factory-functions.md) |
 | Manage state with Svelte stores | [../examples/svelte-stores.md](../examples/svelte-stores.md) |
-| Write unit tests | [testing.md](testing.md) → Unit Tests |
+| Write unit tests | [testing.md](testing.md) |
 | Write acceptance tests | [atdd-workflow.md](atdd-workflow.md) |
-| Calculate VSM metrics | [vsm-domain.md](vsm-domain.md) → Metric Calculations |
-| Validate VSM data | [vsm-domain.md](vsm-domain.md) → Validation Rules |
+| Calculate VSM metrics | [vsm-domain.md](vsm-domain.md) |
+| Validate VSM data | [vsm-domain.md](vsm-domain.md) |
 | Style UI components | [ui-patterns.md](ui-patterns.md) |
 | Run quality checks | [quality-verification.md](quality-verification.md) |
 | Prepare for commit | [../checklists/pre-commit.md](../checklists/pre-commit.md) |
 
 ---
 
-## 🎯 By Skill (Workflows)
-
-| Skill | When to Use | Prerequisites |
-|-------|-------------|---------------|
-| [new-feature](../skills/new-feature.md) | Creating a new feature from scratch | [atdd-workflow.md](atdd-workflow.md) |
-| [implement-feature](../skills/implement-feature.md) | Implementing an approved feature file | [testing.md](testing.md), [javascript-svelte.md](javascript-svelte.md) |
-| [new-component](../skills/new-component.md) | Adding a Svelte component | [javascript-svelte.md](javascript-svelte.md), [ui-patterns.md](ui-patterns.md) |
-| [add-metric](../skills/add-metric.md) | Adding a metrics calculation | [vsm-domain.md](vsm-domain.md), [testing.md](testing.md) |
-| [new-process-step](../skills/new-process-step.md) | Adding a VSM step type | [vsm-domain.md](vsm-domain.md) |
-| [run-simulation](../skills/run-simulation.md) | Running/debugging simulations | [vsm-domain.md](vsm-domain.md) |
-
-See [../skills/_GUIDE.md](../skills/_GUIDE.md) for detailed skill selection flowchart.
-
----
-
-## 📖 By Keyword
+## By Keyword
 
 Use Ctrl+F / Cmd+F to search this list:
 
 - **Acceptance testing** → [atdd-workflow.md](atdd-workflow.md)
 - **Accessibility** → [ui-patterns.md](ui-patterns.md)
-- **Architecture** → [../guides/architecture.md](../guides/architecture.md)
 - **Batch size** → [vsm-domain.md](vsm-domain.md)
 - **BDD** → [atdd-workflow.md](atdd-workflow.md)
 - **Build** → [quality-verification.md](quality-verification.md)
 - **Calculations** → [vsm-domain.md](vsm-domain.md)
 - **Checklist** → [../checklists/](../checklists/)
 - **Classes (don't use!)** → [javascript-svelte.md](javascript-svelte.md), [../examples/factory-functions.md](../examples/factory-functions.md)
-- **Code review** → [../checklists/code-review.md](../checklists/code-review.md)
 - **Components** → [javascript-svelte.md](javascript-svelte.md), [../examples/svelte-components.md](../examples/svelte-components.md)
 - **Connections** → [vsm-domain.md](vsm-domain.md)
 - **Cucumber** → [atdd-workflow.md](atdd-workflow.md)
@@ -193,12 +163,12 @@ Use Ctrl+F / Cmd+F to search this list:
 - **Props ($props rune)** → [javascript-svelte.md](javascript-svelte.md), [../examples/svelte-components.md](../examples/svelte-components.md)
 - **Quality gates** → [quality-verification.md](quality-verification.md)
 - **Queue** → [vsm-domain.md](vsm-domain.md)
-- **Svelte Flow** → [ui-patterns.md](ui-patterns.md), [../guides/architecture.md](../guides/architecture.md)
+- **Svelte Flow** → [ui-patterns.md](ui-patterns.md)
 - **Red-Green-Refactor** → [atdd-workflow.md](atdd-workflow.md)
 - **Responsive design** → [ui-patterns.md](ui-patterns.md)
 - **Rework** → [vsm-domain.md](vsm-domain.md)
 - **Scenarios** → [atdd-workflow.md](atdd-workflow.md)
-- **Simulation** → [../guides/architecture.md](../guides/architecture.md), [vsm-domain.md](vsm-domain.md)
+- **Simulation** → [vsm-domain.md](vsm-domain.md)
 - **State management** → [../examples/svelte-stores.md](../examples/svelte-stores.md)
 - **Step definitions** → [atdd-workflow.md](atdd-workflow.md)
 - **Steps (VSM)** → [vsm-domain.md](vsm-domain.md)
@@ -218,18 +188,4 @@ Use Ctrl+F / Cmd+F to search this list:
 - **Value Stream Map** → [vsm-domain.md](vsm-domain.md)
 - **Vitest** → [testing.md](testing.md)
 - **VSM** → [vsm-domain.md](vsm-domain.md)
-- **Workflows** → [../guides/workflows.md](../guides/workflows.md)
 - **Svelte stores** → [../examples/svelte-stores.md](../examples/svelte-stores.md)
-
----
-
-## 🔗 Related Documentation
-
-- [Main Index](../INDEX.md) - Overview and navigation
-- [Quick Start](../QUICK_START.md) - 5-minute onboarding
-- [Skills Guide](../skills/_GUIDE.md) - Task-based workflows
-- [Checklists](../checklists/) - Quick reference lists
-
----
-
-**Can't find what you need?** Check [INDEX.md](../INDEX.md) or search within specific rule files.

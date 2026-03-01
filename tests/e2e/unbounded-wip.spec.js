@@ -77,19 +77,20 @@ test.describe('Unbounded WIP simulator realtime updates', () => {
   }) => {
     await page.getByTestId('start-button').click()
 
-    // Take a snapshot of active items after a short wait
-    await page.waitForTimeout(500)
+    // Wait for at least one active item to appear
+    await expect(page.getByTestId('active-item').first()).toBeVisible({
+      timeout: 3000,
+    })
     const firstSnapshot = await page.getByTestId('active-item').count()
 
-    // Wait longer and check again — count should change as items flow
-    await page.waitForTimeout(1000)
-    const secondSnapshot =
-      (await page.getByTestId('active-item').count()) +
-      (await page.getByTestId('queue-item').count()) +
-      (await page.getByTestId('completed-item').count())
-
-    // The total visible item count should have grown as more items enter
-    expect(secondSnapshot).toBeGreaterThan(firstSnapshot)
+    // Wait for more items to flow through the pipeline
+    await expect(async () => {
+      const total =
+        (await page.getByTestId('active-item').count()) +
+        (await page.getByTestId('queue-item').count()) +
+        (await page.getByTestId('completed-item').count())
+      expect(total).toBeGreaterThan(firstSnapshot)
+    }).toPass({ timeout: 3000 })
   })
 
   test('metrics update after stepping', async ({ page }) => {
@@ -109,6 +110,51 @@ test.describe('Unbounded WIP simulator realtime updates', () => {
 
     expect(parseInt(unboundedWip)).toBeGreaterThan(0)
     expect(parseInt(wipLimitedWip)).toBeGreaterThan(0)
+  })
+
+  test('config panel toggles open and shows shared settings', async ({
+    page,
+  }) => {
+    const toggle = page.getByTestId('config-panel-toggle')
+    await expect(toggle).toBeVisible()
+
+    // Panel body should be hidden by default
+    await expect(page.getByTestId('config-panel-body')).not.toBeVisible()
+
+    // Click to expand
+    await toggle.click()
+    await expect(page.getByTestId('config-panel-body')).toBeVisible()
+    await expect(page.getByTestId('config-team-size-input')).toBeVisible()
+    await expect(page.getByTestId('config-dev-time-input')).toBeVisible()
+    await expect(page.getByTestId('config-spread-input')).toBeVisible()
+    await expect(page.getByTestId('config-arrival-rate-input')).toBeVisible()
+  })
+
+  test('config panel sliders change values', async ({ page }) => {
+    const toggle = page.getByTestId('config-panel-toggle')
+    await toggle.click()
+
+    const teamSizeInput = page.getByTestId('config-team-size-input')
+    await expect(teamSizeInput).toBeVisible()
+
+    // Change team size and verify the value updates
+    await teamSizeInput.fill('4')
+    await expect(teamSizeInput).toHaveValue('4')
+  })
+
+  test('tooltips are visible on hover', async ({ page }) => {
+    const toggle = page.getByTestId('config-panel-toggle')
+    await toggle.click()
+
+    // Hover over a tooltip trigger (info icon next to Team Size)
+    const tooltipTrigger = page
+      .getByTestId('config-panel-body')
+      .locator('[role="tooltip"]')
+      .first()
+    const triggerParent = tooltipTrigger.locator('..')
+    await triggerParent.hover()
+
+    await expect(tooltipTrigger).toBeVisible()
   })
 
   test('reset clears all pipeline items', async ({ page }) => {

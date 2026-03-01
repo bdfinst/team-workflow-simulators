@@ -3,6 +3,7 @@
   import PipelineView from '$lib/components/simulator/PipelineView.svelte'
   import MetricsDashboard from '$lib/components/simulator/MetricsDashboard.svelte'
   import ParameterControls from '$lib/components/simulator/ParameterControls.svelte'
+  import ConfigPanel from '$lib/components/simulator/ConfigPanel.svelte'
   import EducationalCallouts from '$lib/components/simulator/EducationalCallouts.svelte'
 
   const sim = simulationStore
@@ -54,6 +55,15 @@
     {/if}
   </header>
 
+  <!-- Configuration panel -->
+  <div class="mb-2">
+    <ConfigPanel
+      config={sim.config}
+      isRunning={sim.isRunning}
+      onupdate={handleConfigUpdate}
+    />
+  </div>
+
   <!-- Controls strip -->
   <ParameterControls
     config={sim.config}
@@ -76,11 +86,13 @@
         pipeline={sim.unboundedPipeline}
         label="No WIP Limit"
         variant="danger"
+        isRunning={sim.isRunning}
       />
       <PipelineView
         pipeline={sim.wipLimitedPipeline}
         label="WIP-Limited"
         variant="success"
+        isRunning={sim.isRunning}
       />
     </div>
 

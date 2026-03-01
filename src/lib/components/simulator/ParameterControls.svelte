@@ -1,4 +1,6 @@
 <script>
+  import ControlTooltip from './ControlTooltip.svelte'
+
   let { config, isRunning, onupdate, onstart, onstop, onstep, onreset } =
     $props()
 
@@ -13,7 +15,12 @@
 >
   <label class="flex min-w-[120px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>WIP Limit</span>
+      <span class="flex items-center">
+        WIP Limit
+        <ControlTooltip
+          text="Max items allowed in each pipeline step before blocking upstream"
+        />
+      </span>
       <span class="font-mono text-accent-cyan">{config.wipLimit}</span>
     </span>
     <input
@@ -31,7 +38,10 @@
 
   <label class="flex min-w-[120px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Items</span>
+      <span class="flex items-center">
+        Items
+        <ControlTooltip text="Total work items to process in the simulation" />
+      </span>
       <span class="font-mono text-accent-cyan">{config.workItemCount}</span>
     </span>
     <input
@@ -47,32 +57,12 @@
     />
   </label>
 
-  <label class="flex min-w-[120px] flex-1 flex-col gap-0.5">
-    <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Spread</span>
-      <span class="font-mono text-accent-cyan"
-        >&plusmn;{Math.round(config.processTimeSpread * 100)}%</span
-      >
-    </span>
-    <input
-      type="range"
-      min="0"
-      max="100"
-      value={config.processTimeSpread * 100}
-      aria-valuetext="plus or minus {Math.round(
-        config.processTimeSpread * 100,
-      )} percent"
-      oninput={(e) =>
-        onupdate('processTimeSpread', Number(e.target.value) / 100)}
-      disabled={isRunning}
-      class="h-1 w-full cursor-pointer accent-accent-cyan"
-      data-testid="process-time-spread-input"
-    />
-  </label>
-
   <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Speed</span>
+      <span class="flex items-center">
+        Speed
+        <ControlTooltip text="Playback speed multiplier for the simulation" />
+      </span>
       <span class="font-mono text-accent-cyan">{config.simulationSpeed}x</span>
     </span>
     <input
@@ -85,27 +75,6 @@
       oninput={(e) => handleChange('simulationSpeed', e)}
       class="h-1 w-full cursor-pointer accent-accent-cyan"
       data-testid="simulation-speed-input"
-    />
-  </label>
-
-  <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
-    <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Arrival</span>
-      <span class="font-mono text-accent-cyan">{config.arrivalRate}/tick</span>
-    </span>
-    <input
-      type="range"
-      min="0.5"
-      max="3"
-      step="0.5"
-      value={config.arrivalRate}
-      aria-valuetext="{config.arrivalRate} {config.arrivalRate === 1
-        ? 'item'
-        : 'items'} per tick"
-      oninput={(e) => handleChange('arrivalRate', e)}
-      disabled={isRunning}
-      class="h-1 w-full cursor-pointer accent-accent-cyan"
-      data-testid="arrival-rate-input"
     />
   </label>
 

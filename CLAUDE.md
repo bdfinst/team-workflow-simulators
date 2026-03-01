@@ -44,23 +44,34 @@ src/
 │   ├── simulation/          # Pure JS simulation engine (no Svelte deps)
 │   │   ├── createPipeline.js  # Factory: pipeline with steps, WIP limits, tick()
 │   │   ├── metrics.js         # calculateMetrics(pipeline) → snapshot
-│   │   └── processTime.js     # applyVariability(base, spread)
+│   │   ├── processTime.js     # applyVariability(base, spread)
+│   │   ├── snapshotPipeline.js # Create plain-data snapshot for reactive UI
+│   │   ├── defaults.js        # Shared default config values (DEFAULTS)
+│   │   └── thresholds.js      # WIP color thresholds (shared constants)
 │   ├── stores/
-│   │   └── simulationStore.svelte.js  # Rune store: runs two pipelines side-by-side
+│   │   ├── simulationStore.svelte.js   # Unbounded WIP: two pipelines side-by-side
+│   │   └── codeReviewStore.svelte.js   # Code Review: three pipelines (pair/sync/async)
 │   └── components/
-│       └── simulator/       # Shared simulator UI components
-│           ├── PipelineView.svelte       # Step queues + active items visualization
-│           ├── MetricsDashboard.svelte   # Side-by-side metrics table
-│           ├── ParameterControls.svelte  # Sliders + Start/Pause/Step/Reset
-│           └── EducationalCallouts.svelte # Contextual learning cards
+│       ├── simulator/       # Shared simulator UI components
+│       │   ├── PipelineView.svelte       # Step queues + active items visualization
+│       │   ├── MetricsDashboard.svelte   # Side-by-side metrics table (2-column)
+│       │   ├── ConfigPanel.svelte        # Collapsible shared config (team, times)
+│       │   ├── ControlTooltip.svelte     # CSS-only info tooltip
+│       │   ├── ParameterControls.svelte  # Simulator-specific sliders + actions
+│       │   └── EducationalCallouts.svelte # Contextual learning cards
+│       └── code-review/     # Code Review simulator components
+│           ├── ReviewControls.svelte     # Code review-specific parameter sliders
+│           ├── ReviewMetrics.svelte      # Three-column metrics table
+│           └── ReviewCallouts.svelte     # Code review educational callouts
 ├── routes/
-│   ├── +page.svelte         # Home: links to all simulators
-│   └── unbounded-wip/
-│       └── +page.svelte     # Unbounded WIP simulator page
+│   ├── +page.svelte              # Home: links to all simulators
+│   ├── unbounded-wip/
+│   │   └── +page.svelte          # Unbounded WIP simulator page
+│   └── code-review-styles/
+│       └── +page.svelte          # Code Review Styles simulator page
 tests/
 ├── unit/simulation/         # Vitest unit tests for engine + metrics
-features/
-└── simulation/unbounded-wip/ # Gherkin acceptance specs (5 feature files)
+├── e2e/                     # Playwright E2E tests
 docs/
 └── goals/                   # Goal documents per simulator
 ```
@@ -75,6 +86,13 @@ docs/
 - **Store**: `simulationStore.svelte.js` — runs unbounded + WIP-limited pipelines in parallel, exposes reactive metrics
 - **Unit tests**: 25 tests across 4 files (createPipeline, tick, metrics, processTime)
 - **Key pattern**: Each simulator uses `createPipeline()` for its engine logic, keeping simulation pure JS and independently testable
+
+### 2. Code Review Styles (`/code-review-styles`)
+
+- **Goal doc**: `docs/goals/code-review-styles.md`
+- **Engine**: Reuses `createPipeline()` with rework mechanics for three review approaches (pair, synchronous, async)
+- **Store**: `codeReviewStore.svelte.js` — runs three pipelines in parallel with configurable wait times, context switch penalties, and pair overhead
+- **Key insight**: Demonstrates how review approach impacts lead time and flow efficiency via wait times and context switching
 
 ## Setup
 

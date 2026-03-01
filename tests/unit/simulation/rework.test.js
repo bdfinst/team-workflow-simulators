@@ -17,7 +17,7 @@ describe('rework mechanics', () => {
     pipeline.tick()
 
     const item = pipeline.getSteps()[0].active[0]
-    expect(item.retriesRemaining).toBeDefined()
+    expect(typeof item.retriesRemaining).toBe('number')
     expect(item.retriesRemaining).toBeGreaterThanOrEqual(0)
     expect(item.retriesRemaining).toBeLessThanOrEqual(2)
     vi.restoreAllMocks()

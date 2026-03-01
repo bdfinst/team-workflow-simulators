@@ -1,44 +1,27 @@
 import { createPipeline } from '../simulation/createPipeline.js'
 import { calculateMetrics } from '../simulation/metrics.js'
-
-const DEFAULT_STEPS = [
-  { name: 'Development', processTime: 4 },
-  { name: 'Code Review', processTime: 2 },
-  { name: 'Testing', processTime: 3 },
-  { name: 'Deployment', processTime: 1 },
-]
+import { snapshotPipeline } from '../simulation/snapshotPipeline.js'
+import { DEFAULTS } from '../simulation/defaults.js'
 
 const DEFAULT_CONFIG = {
+  teamSize: DEFAULTS.teamSize,
   wipLimit: 3,
   workItemCount: 20,
-  processTimeSpread: 0.3,
+  devTime: DEFAULTS.devTime,
+  reviewTime: DEFAULTS.reviewTime,
+  testTime: DEFAULTS.testTime,
+  deployTime: DEFAULTS.deployTime,
+  processTimeSpread: DEFAULTS.processTimeSpread,
   simulationSpeed: 1,
-  arrivalRate: 1,
+  arrivalRate: DEFAULTS.arrivalRate,
 }
 
-/**
- * Create a plain-data snapshot of a pipeline for reactive UI consumption.
- * Returns new object/array references so Svelte detects the change.
- */
-const snapshotPipeline = (pipeline) => {
-  const steps = pipeline.getSteps().map((s) => ({
-    name: s.name,
-    baseProcessTime: s.baseProcessTime,
-    wipLimit: s.wipLimit,
-    workerCount: s.workerCount,
-    queue: [...s.queue],
-    active: [...s.active],
-  }))
-
-  const completed = [...pipeline.getCompleted()]
-  const incomingCount = pipeline.getIncoming().length
-
-  return {
-    getSteps: () => steps,
-    getCompleted: () => completed,
-    incomingCount,
-  }
-}
+const buildSteps = (config) => [
+  { name: 'Development', processTime: config.devTime },
+  { name: 'Code Review', processTime: config.reviewTime },
+  { name: 'Testing', processTime: config.testTime },
+  { name: 'Deployment', processTime: config.deployTime },
+]
 
 function createSimulationStore() {
   let config = $state({ ...DEFAULT_CONFIG })
@@ -59,16 +42,18 @@ function createSimulationStore() {
   const reset = () => {
     stop()
 
+    const steps = buildSteps(config)
+
     unboundedEngine = createPipeline({
-      steps: DEFAULT_STEPS,
-      workerCount: config.wipLimit,
+      steps,
+      workerCount: config.teamSize,
       processTimeSpread: config.processTimeSpread,
     })
 
     wipLimitedEngine = createPipeline({
-      steps: DEFAULT_STEPS,
+      steps,
       wipLimit: config.wipLimit,
-      workerCount: config.wipLimit,
+      workerCount: config.teamSize,
       processTimeSpread: config.processTimeSpread,
     })
 
@@ -116,7 +101,7 @@ function createSimulationStore() {
   }
 
   const start = () => {
-    if (isRunning || isComplete) return
+    if (intervalId || isComplete) return
     if (!unboundedEngine) reset()
     isRunning = true
 
@@ -141,6 +126,7 @@ function createSimulationStore() {
   }
 
   const updateConfig = (key, value) => {
+    if (isRunning) return
     config = { ...config, [key]: value }
   }
 

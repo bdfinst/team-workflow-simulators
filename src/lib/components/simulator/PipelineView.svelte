@@ -1,5 +1,5 @@
 <script>
-  let { pipeline, label, variant = 'neutral' } = $props()
+  let { pipeline, label, variant = 'neutral', isRunning = false } = $props()
 
   const variantBorder = {
     danger: 'border-accent-red/40',
@@ -40,7 +40,11 @@
   <div class="flex items-stretch gap-0 overflow-x-auto p-2">
     {#each pipeline.getSteps() as step, i (step.name)}
       {#if i > 0}
-        <div class="flex shrink-0 items-center px-1 text-surface-500">
+        <div
+          class="flex shrink-0 items-center px-1 text-surface-500 {isRunning
+            ? 'animate-flow-arrow'
+            : ''}"
+        >
           <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
@@ -92,7 +96,7 @@
               <div
                 class="h-3 w-3 rounded-sm {item.remaining <= 1
                   ? 'bg-accent-green'
-                  : 'bg-accent-blue'}"
+                  : 'bg-accent-blue'} {isRunning ? 'animate-active-pulse' : ''}"
                 role="listitem"
                 aria-label="{item.id}, {item.remaining <= 1
                   ? 'almost done'
@@ -106,7 +110,11 @@
     {/each}
 
     <!-- Completed column -->
-    <div class="flex shrink-0 items-center px-1 text-surface-500">
+    <div
+      class="flex shrink-0 items-center px-1 text-surface-500 {isRunning
+        ? 'animate-flow-arrow'
+        : ''}"
+    >
       <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
         <path
           fill-rule="evenodd"

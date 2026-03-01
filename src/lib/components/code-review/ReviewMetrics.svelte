@@ -1,29 +1,26 @@
 <script>
+  import { WIP_GREEN_MAX, WIP_AMBER_MAX } from '../../simulation/thresholds.js'
+
   let { pairMetrics, syncMetrics, asyncMetrics, isComplete } = $props()
-
-  const best = (values, lowerIsBetter = true) => {
-    const sorted = [...values].sort((a, b) => (lowerIsBetter ? a - b : b - a))
-    return sorted[0]
-  }
-
-  const worst = (values, lowerIsBetter = true) => {
-    const sorted = [...values].sort((a, b) => (lowerIsBetter ? b - a : a - b))
-    return sorted[0]
-  }
 
   const cellColor = (value, allValues, lowerIsBetter = true) => {
     if (!isComplete) return 'text-surface-100'
-    if (value === best(allValues, lowerIsBetter)) return 'text-accent-green'
-    if (value === worst(allValues, lowerIsBetter)) return 'text-accent-red'
+    const bestVal = lowerIsBetter
+      ? Math.min(...allValues)
+      : Math.max(...allValues)
+    const worstVal = lowerIsBetter
+      ? Math.max(...allValues)
+      : Math.min(...allValues)
+    if (value === bestVal) return 'text-accent-green'
+    if (value === worstVal) return 'text-accent-red'
     return 'text-surface-100'
   }
 
-  const wipColor = (v) =>
-    cellColor(v, [
-      pairMetrics.wipCount,
-      syncMetrics.wipCount,
-      asyncMetrics.wipCount,
-    ])
+  const wipColor = (count) => {
+    if (count <= WIP_GREEN_MAX) return 'text-accent-green'
+    if (count <= WIP_AMBER_MAX) return 'text-accent-amber'
+    return 'text-accent-red'
+  }
   const leadColor = (v) =>
     cellColor(v, [
       pairMetrics.avgLeadTime,
@@ -69,7 +66,7 @@
           <th class="pb-1 text-right font-medium">Async</th>
         </tr>
       </thead>
-      <tbody class="font-mono">
+      <tbody class="font-mono" style="font-variant-numeric: tabular-nums">
         <tr class="border-t border-surface-700" data-testid="metric-wip-count">
           <td class="py-1 pr-2 font-sans font-medium text-surface-200"
             >WIP Count</td

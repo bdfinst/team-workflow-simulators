@@ -23,11 +23,42 @@
   --color-accent-purple: #a78bfa;
 }
 
+@keyframes active-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 4px 1px currentColor;
+  }
+}
+
+@keyframes flow-arrow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-active-pulse {
+  animation: active-pulse 1.6s ease-in-out infinite;
+}
+
+.animate-flow-arrow {
+  animation: flow-arrow 1.2s ease-in-out infinite;
+}
+
 html,
 body {
   height: 100%;
   overflow: hidden;
   font-family: var(--font-sans);
-  background: var(--color-surface-900);
+  background:
+    radial-gradient(circle, var(--color-surface-800) 1px, transparent 1px) 0 0 /
+      22px 22px,
+    var(--color-surface-900);
   color: var(--color-surface-50);
 }

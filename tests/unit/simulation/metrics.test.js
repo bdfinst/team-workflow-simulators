@@ -82,7 +82,6 @@ describe('calculateMetrics', () => {
     const metrics = calculateMetrics(pipeline)
     // Total process time = 2 + 1 = 3, lead time = 3
     // flow efficiency = 3/3 = 1.0 (100%) when no waiting
-    expect(metrics.flowEfficiency).toBeGreaterThan(0)
-    expect(metrics.flowEfficiency).toBeLessThanOrEqual(1)
+    expect(metrics.flowEfficiency).toBe(1)
   })
 })

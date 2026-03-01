@@ -1,61 +1,40 @@
 import { createPipeline } from '../simulation/createPipeline.js'
 import { calculateMetrics } from '../simulation/metrics.js'
+import { snapshotPipeline } from '../simulation/snapshotPipeline.js'
+import { DEFAULTS } from '../simulation/defaults.js'
 
 const DEFAULT_CONFIG = {
-  teamSize: 3,
+  teamSize: DEFAULTS.teamSize,
   maxRetries: 2,
   pairOverhead: 0.15,
   contextSwitchPenalty: 0.25,
+  syncWait: 1,
   asyncWait: 4,
   workItemCount: 20,
+  devTime: DEFAULTS.devTime,
+  reviewTime: DEFAULTS.reviewTime,
+  testTime: DEFAULTS.testTime,
+  deployTime: DEFAULTS.deployTime,
+  processTimeSpread: DEFAULTS.processTimeSpread,
+  arrivalRate: DEFAULTS.arrivalRate,
   simulationSpeed: 1,
-}
-
-const DEV_TIME = 4
-const REVIEW_TIME = 2
-const TEST_TIME = 3
-const DEPLOY_TIME = 1
-const PROCESS_TIME_SPREAD = 0.3
-const ARRIVAL_RATE = 1
-
-/**
- * Create a plain-data snapshot of a pipeline for reactive UI consumption.
- */
-const snapshotPipeline = (pipeline) => {
-  const steps = pipeline.getSteps().map((s) => ({
-    name: s.name,
-    baseProcessTime: s.baseProcessTime,
-    wipLimit: s.wipLimit,
-    workerCount: s.workerCount,
-    queue: [...s.queue],
-    active: [...s.active],
-  }))
-
-  const completed = [...pipeline.getCompleted()]
-  const incomingCount = pipeline.getIncoming().length
-
-  return {
-    getSteps: () => steps,
-    getCompleted: () => completed,
-    incomingCount,
-  }
 }
 
 const buildPairSteps = (config) => [
   {
     name: 'Develop & Review',
-    processTime: Math.round(DEV_TIME * (1 + config.pairOverhead)),
+    processTime: Math.round(config.devTime * (1 + config.pairOverhead)),
     workerCount: Math.floor(config.teamSize / 2) || 1,
   },
   {
     name: 'Testing',
-    processTime: TEST_TIME,
+    processTime: config.testTime,
     workerCount: Infinity,
     wipLimit: Infinity,
   },
   {
     name: 'Deployment',
-    processTime: DEPLOY_TIME,
+    processTime: config.deployTime,
     workerCount: Infinity,
     wipLimit: Infinity,
   },
@@ -64,23 +43,25 @@ const buildPairSteps = (config) => [
 const buildSyncSteps = (config) => [
   {
     name: 'Development',
-    processTime: Math.round(DEV_TIME * (1 + config.contextSwitchPenalty)),
+    processTime:
+      Math.round(config.devTime * (1 + config.contextSwitchPenalty)) +
+      config.syncWait,
     workerCount: config.teamSize,
   },
   {
     name: 'Code Review',
-    processTime: REVIEW_TIME,
+    processTime: config.reviewTime + config.syncWait,
     workerCount: config.teamSize,
   },
   {
     name: 'Testing',
-    processTime: TEST_TIME,
+    processTime: config.testTime,
     workerCount: Infinity,
     wipLimit: Infinity,
   },
   {
     name: 'Deployment',
-    processTime: DEPLOY_TIME,
+    processTime: config.deployTime,
     workerCount: Infinity,
     wipLimit: Infinity,
   },
@@ -89,23 +70,23 @@ const buildSyncSteps = (config) => [
 const buildAsyncSteps = (config) => [
   {
     name: 'Development',
-    processTime: DEV_TIME,
+    processTime: config.devTime + config.asyncWait,
     workerCount: config.teamSize,
   },
   {
     name: 'Code Review',
-    processTime: REVIEW_TIME + config.asyncWait,
+    processTime: config.reviewTime + config.asyncWait,
     workerCount: 1,
   },
   {
     name: 'Testing',
-    processTime: TEST_TIME,
+    processTime: config.testTime,
     workerCount: Infinity,
     wipLimit: Infinity,
   },
   {
     name: 'Deployment',
-    processTime: DEPLOY_TIME,
+    processTime: config.deployTime,
     workerCount: Infinity,
     wipLimit: Infinity,
   },
@@ -134,19 +115,19 @@ function createCodeReviewStore() {
 
     pairEngine = createPipeline({
       steps: buildPairSteps(config),
-      processTimeSpread: PROCESS_TIME_SPREAD,
+      processTimeSpread: config.processTimeSpread,
       rework: { fromStep: 0, toStep: 0, maxRetries: config.maxRetries },
     })
 
     syncEngine = createPipeline({
       steps: buildSyncSteps(config),
-      processTimeSpread: PROCESS_TIME_SPREAD,
+      processTimeSpread: config.processTimeSpread,
       rework: { fromStep: 1, toStep: 0, maxRetries: config.maxRetries },
     })
 
     asyncEngine = createPipeline({
       steps: buildAsyncSteps(config),
-      processTimeSpread: PROCESS_TIME_SPREAD,
+      processTimeSpread: config.processTimeSpread,
       rework: { fromStep: 1, toStep: 0, maxRetries: config.maxRetries },
     })
 
@@ -164,7 +145,7 @@ function createCodeReviewStore() {
   const addItems = () => {
     if (itemsAdded >= config.workItemCount) return
 
-    arrivalAccumulator += ARRIVAL_RATE
+    arrivalAccumulator += config.arrivalRate
     while (arrivalAccumulator >= 1 && itemsAdded < config.workItemCount) {
       const id = `item-${itemsAdded + 1}`
       pairEngine.addWorkItem({ id })
@@ -200,7 +181,7 @@ function createCodeReviewStore() {
   }
 
   const start = () => {
-    if (isRunning || isComplete) return
+    if (intervalId || isComplete) return
     if (!pairEngine) reset()
     isRunning = true
 
@@ -224,6 +205,7 @@ function createCodeReviewStore() {
   }
 
   const updateConfig = (key, value) => {
+    if (isRunning) return
     config = { ...config, [key]: value }
   }
 

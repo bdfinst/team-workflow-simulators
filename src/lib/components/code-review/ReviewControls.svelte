@@ -1,4 +1,6 @@
 <script>
+  import ControlTooltip from '../simulator/ControlTooltip.svelte'
+
   let { config, isRunning, onupdate, onstart, onstop, onstep, onreset } =
     $props()
 
@@ -13,25 +15,12 @@
 >
   <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Team Size</span>
-      <span class="font-mono text-accent-cyan">{config.teamSize}</span>
-    </span>
-    <input
-      type="range"
-      min="1"
-      max="6"
-      value={config.teamSize}
-      aria-valuetext="{config.teamSize} developers"
-      oninput={(e) => handleChange('teamSize', e)}
-      disabled={isRunning}
-      class="h-1 w-full cursor-pointer accent-accent-cyan"
-      data-testid="team-size-input"
-    />
-  </label>
-
-  <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
-    <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Max Retries</span>
+      <span class="flex items-center">
+        Max Retries
+        <ControlTooltip
+          text="Maximum rework cycles before an item passes review"
+        />
+      </span>
       <span class="font-mono text-accent-cyan">{config.maxRetries}</span>
     </span>
     <input
@@ -49,7 +38,12 @@
 
   <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Pair Overhead</span>
+      <span class="flex items-center">
+        Pair Overhead
+        <ControlTooltip
+          text="Extra time cost when two developers pair-program on one item"
+        />
+      </span>
       <span class="font-mono text-accent-cyan"
         >{Math.round(config.pairOverhead * 100)}%</span
       >
@@ -69,7 +63,12 @@
 
   <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Context Switch</span>
+      <span class="flex items-center">
+        Context Switch
+        <ControlTooltip
+          text="Time penalty from switching between tasks during synchronous review"
+        />
+      </span>
       <span class="font-mono text-accent-cyan"
         >{Math.round(config.contextSwitchPenalty * 100)}%</span
       >
@@ -92,7 +91,35 @@
 
   <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Async Wait</span>
+      <span class="flex items-center">
+        Sync Wait
+        <ControlTooltip
+          text="Ticks waiting for a synchronous reviewer to become available"
+        />
+      </span>
+      <span class="font-mono text-accent-cyan">{config.syncWait}t</span>
+    </span>
+    <input
+      type="range"
+      min="0"
+      max="4"
+      value={config.syncWait}
+      aria-valuetext="{config.syncWait} ticks wait time"
+      oninput={(e) => handleChange('syncWait', e)}
+      disabled={isRunning}
+      class="h-1 w-full cursor-pointer accent-accent-cyan"
+      data-testid="sync-wait-input"
+    />
+  </label>
+
+  <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
+    <span class="flex items-center justify-between text-xs text-surface-300">
+      <span class="flex items-center">
+        Async Wait
+        <ControlTooltip
+          text="Idle ticks waiting for an async reviewer to respond, applies to review and rework"
+        />
+      </span>
       <span class="font-mono text-accent-cyan">{config.asyncWait}t</span>
     </span>
     <input
@@ -110,7 +137,10 @@
 
   <label class="flex min-w-[100px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Items</span>
+      <span class="flex items-center">
+        Items
+        <ControlTooltip text="Total work items to process in the simulation" />
+      </span>
       <span class="font-mono text-accent-cyan">{config.workItemCount}</span>
     </span>
     <input
@@ -128,7 +158,10 @@
 
   <label class="flex min-w-[80px] flex-1 flex-col gap-0.5">
     <span class="flex items-center justify-between text-xs text-surface-300">
-      <span>Speed</span>
+      <span class="flex items-center">
+        Speed
+        <ControlTooltip text="Playback speed multiplier for the simulation" />
+      </span>
       <span class="font-mono text-accent-cyan">{config.simulationSpeed}x</span>
     </span>
     <input

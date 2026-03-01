@@ -2,6 +2,7 @@
   import { codeReviewStore } from '$lib/stores/codeReviewStore.svelte.js'
   import PipelineView from '$lib/components/simulator/PipelineView.svelte'
   import ReviewControls from '$lib/components/code-review/ReviewControls.svelte'
+  import ConfigPanel from '$lib/components/simulator/ConfigPanel.svelte'
   import ReviewMetrics from '$lib/components/code-review/ReviewMetrics.svelte'
   import ReviewCallouts from '$lib/components/code-review/ReviewCallouts.svelte'
 
@@ -54,6 +55,15 @@
     {/if}
   </header>
 
+  <!-- Configuration panel -->
+  <div class="mb-2">
+    <ConfigPanel
+      config={sim.config}
+      isRunning={sim.isRunning}
+      onupdate={handleConfigUpdate}
+    />
+  </div>
+
   <!-- Controls strip -->
   <ReviewControls
     config={sim.config}
@@ -76,16 +86,19 @@
         pipeline={sim.pairPipeline}
         label="Pair Programming"
         variant="success"
+        isRunning={sim.isRunning}
       />
       <PipelineView
         pipeline={sim.syncPipeline}
         label="Synchronous Review"
         variant="neutral"
+        isRunning={sim.isRunning}
       />
       <PipelineView
         pipeline={sim.asyncPipeline}
         label="Async Review"
         variant="danger"
+        isRunning={sim.isRunning}
       />
     </div>
 

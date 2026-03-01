@@ -71,13 +71,28 @@ test.describe('Code Review Styles simulator', () => {
   })
 
   test('parameter sliders exist and are adjustable', async ({ page }) => {
-    await expect(page.getByTestId('team-size-input')).toBeVisible()
     await expect(page.getByTestId('max-retries-input')).toBeVisible()
     await expect(page.getByTestId('pair-overhead-input')).toBeVisible()
     await expect(page.getByTestId('context-switch-input')).toBeVisible()
     await expect(page.getByTestId('async-wait-input')).toBeVisible()
     await expect(page.getByTestId('work-item-count-input')).toBeVisible()
     await expect(page.getByTestId('simulation-speed-input')).toBeVisible()
+  })
+
+  test('config panel toggles open and shows shared settings', async ({
+    page,
+  }) => {
+    const toggle = page.getByTestId('config-panel-toggle')
+    await expect(toggle).toBeVisible()
+
+    // Panel body should be hidden by default
+    await expect(page.getByTestId('config-panel-body')).not.toBeVisible()
+
+    // Click to expand
+    await toggle.click()
+    await expect(page.getByTestId('config-panel-body')).toBeVisible()
+    await expect(page.getByTestId('config-team-size-input')).toBeVisible()
+    await expect(page.getByTestId('config-dev-time-input')).toBeVisible()
   })
 
   test('educational callouts are visible', async ({ page }) => {
