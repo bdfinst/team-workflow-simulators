@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "team_workflow_simulators",
+  "project_id": "7521bec3-57cb-4829-a198-82af6a808c60"
+}
